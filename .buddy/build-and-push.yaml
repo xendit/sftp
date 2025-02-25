@@ -1,0 +1,33 @@
+- pipeline: 'Build and Push Multiarch Image'
+  trigger_mode: ON_EVERY_PUSH
+  trigger_condition: 'ALWAYS'
+  ref_name: '((refs/pull/\d+)|(master))'
+  ref_type: 'WILDCARD'
+  fetch_all_refs: true
+  auto_clear_cache: true
+  priority: NORMAL
+  tags:
+    - ci
+  cpu: "ARM"
+  worker_assignment: TAGS
+  actions:
+    - action: Build and Push Multiarch Docker Image (staging)
+      type: DOCKER_BUILD_MULTI_ARCH
+      region: ap-southeast-1
+      docker_image_tag: latest
+      dockerfile_path: Dockerfile
+      docker_registry: 'AMAZON_ECR'
+      repository: xendit/sftp
+      trigger_condition: ALWAYS
+      integration_hash: 5f69e5f01a22366a8e6adfa7
+      target_platform: 'linux/arm64,linux/amd64'
+    - action: Build and Push Multiarch Docker Image (Prod)
+      type: DOCKER_BUILD_MULTI_ARCH
+      trigger_condition: ALWAYS
+      region: ap-southeast-1
+      docker_image_tag: latest
+      dockerfile_path: Dockerfile
+      docker_registry: 'AMAZON_ECR'
+      repository: xendit/sftp
+      integration_hash: 5e85761fc5f225000f97dd99
+      target_platform: 'linux/arm64,linux/amd64'
